@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Code Editor</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/b35fad3be2.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <style>
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+
+.html {
+  width: 400px;
+  
+}
+
+.css {
+  width: 400px;
+  position: relative;
+  left: 401px;
+  bottom: 95px;
+}
+
+.javascript {
+  width: 400px;
+  position: relative;
+  left: 802px;
+  bottom: 190px;
+}
+
+.outputlabel {
+  position: relative;
+  bottom: 200px;
+}
+
+.output {
+  position: relative;
+  bottom: 200px;
+  height: 800px;
+}
+
+body {
+    background: #454545;
+    color: #fff;
+}
+
+.left, .right {
+    flex-basis: 50%;
+    padding: 10px;
+}
+
+textarea {
+    width: 100%;
+    height: 28%;
+    background: #1f1f1f;
+    color: #fff;
+    padding: 10px 20px;
+    border: 0;
+    outline: 0;
+    font-size: 18px;
+}
+
+iframe {
+    width: 100%;
+    height: 95%;
+    background: #fff;
+    border: 0;
+    outline: 0;
+}
+
+label i{
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+label {
+    display: flex;
+    align-items: center;
+    background: #000;
+    height: 30px;
+
+}
+</style>
+    <div class="container">
+        <div class="left">
+            <label class="html"><i class="fa-brands fa-html5"></i>HTML</label>
+            <textarea class="html" id="html-code" onkeyup="run()"></textarea>
+
+            <label class="css"><i class="fa-brands fa-css3-alt"></i>CSS</label>
+            <textarea class="css" id="css-code" onkeyup="run()"></textarea>
+
+            <label class="javascript"><i class="fa-brands fa-js"></i>JavaScript</label>
+            <textarea class="javascript" id="js-code" onkeyup="run()"></textarea>
+        </div>
+        <div class="right">
+            <label class="outputlabel"><i class="fa-solid fa-play"></i>Output</label>
+            <iframe class="output" id="output" frameborder="0"></iframe>
+        </div>
+    </div>
+    <script>
+
+       function run () {
+           let htmlCode = document.getElementById("html-code").value;
+           let cssCode = document.getElementById("css-code").value;
+           let jsCode = document.getElementById("js-code").value;
+           let output = document.getElementById("output");
+
+           output.contentDocument.body.innerHTML = htmlCode + "<style>" +cssCode +"</style>";
+           output.contentWindow.eval(jsCode);
+       }
+
+    </script>
+</body>
+</html>
