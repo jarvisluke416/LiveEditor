@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Live Code Editor</title>
 
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 
   <style>
@@ -43,6 +42,27 @@
 
     .controls button:hover {
       background: #0077a8;
+    }
+
+    .arrow-controls {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .arrow-controls button {
+      background: #333;
+      border: none;
+      color: #fff;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .arrow-controls button:hover {
+      background: #555;
     }
 
     .editor-section {
@@ -182,6 +202,14 @@
 
   <iframe id="output"></iframe>
 
+  <!-- Arrow controls -->
+  <div class="arrow-controls" id="arrow-controls" style="display:none;">
+    <button onclick="moveImage('up')">⬆</button>
+    <button onclick="moveImage('left')">⬅</button>
+    <button onclick="moveImage('right')">➡</button>
+    <button onclick="moveImage('down')">⬇</button>
+  </div>
+
   <!-- Modal -->
   <div id="imageModal" class="modal">
     <div class="modal-content">
@@ -195,6 +223,10 @@
   </div>
 
   <script>
+    let xOffset = 0;
+    let yOffset = 0;
+    let hasImage = false;
+
     function run() {
       const htmlCode = document.getElementById("html-code").value;
       const cssCode = document.getElementById("css-code").value;
@@ -203,7 +235,6 @@
       const doc = output.contentDocument || output.contentWindow.document;
 
       doc.open();
-      // Add a default style to center everything
       doc.write(`
         <style>
           body {
@@ -239,25 +270,58 @@
       const imageUrl = document.getElementById("image-url").value.trim();
       if (imageUrl) {
         const htmlBox = document.getElementById("html-code");
-        // Wrap inserted image in a div for centering
-        htmlBox.value += `\n<div class="centered"><img src="${imageUrl}" alt="Inserted Image" /></div>`;
-        // Ensure centering class exists
+        htmlBox.value = `<div class="movable-image"><img src="${imageUrl}" alt="Inserted Image" /></div>`;
         const cssBox = document.getElementById("css-code");
-        if (!cssBox.value.includes(".centered")) {
+        if (!cssBox.value.includes(".movable-image")) {
           cssBox.value += `
-.centered {
+.movable-image {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  transform: translate(0px, 0px);
+  transition: transform 0.2s ease;
 }`;
         }
+        hasImage = true;
+        document.getElementById("arrow-controls").style.display = "flex";
+        xOffset = 0;
+        yOffset = 0;
         run();
         closeModal();
       }
     }
 
-    // Close modal if clicking outside of it
+    function moveImage(direction) {
+      if (!hasImage) return;
+
+      const step = 10;
+      if (direction === "up") yOffset -= step;
+      if (direction === "down") yOffset += step;
+      if (direction === "left") xOffset -= step;
+      if (direction === "right") xOffset += step;
+
+      // Update HTML and rerun
+      const htmlBox = document.getElementById("html-code");
+      let htmlContent = htmlBox.value;
+      htmlContent = htmlContent.replace(
+        /transform: translate\([^)]+\)/,
+        `transform: translate(${xOffset}px, ${yOffset}px)`
+      );
+
+      // if style not inline, add one dynamically
+      if (!htmlContent.includes("transform:")) {
+        htmlContent = htmlContent.replace(
+          '<div class="movable-image">',
+          `<div class="movable-image" style="transform: translate(${xOffset}px, ${yOffset}px)">`
+        );
+      }
+
+      htmlBox.value = htmlContent;
+      run();
+    }
+
+    // Close modal if clicking outside
     window.onclick = function (event) {
       const modal = document.getElementById("imageModal");
       if (event.target === modal) closeModal();
