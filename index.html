@@ -120,6 +120,11 @@
       margin-bottom: 10px;
     }
 
+    .video-screen-controls input[type="range"] {
+      vertical-align: middle;
+      margin-left: 10px;
+    }
+
     @media (max-width: 768px) {
       .editor-body {
         flex-direction: column;
@@ -138,6 +143,9 @@
   <div class="video-screen-controls">
     <button id="play-btn">Play</button>
     <button id="pause-btn">Pause</button>
+    <label for="speed-range">Speed (sec):</label>
+    <input type="range" id="speed-range" min="1" max="10" value="3">
+    <span id="speed-value">3</span>
   </div>
 
   <div class="video-screen-container">
@@ -154,6 +162,7 @@
     let editorCount = 0;
     let videoIndex = 0;
     let videoInterval = null;
+    let intervalDuration = 3000; // default 3 seconds
 
     function addEditor() {
       const container = document.getElementById('editorContainer');
@@ -196,7 +205,7 @@
       });
 
       runEditor(editorId);
-      startVideoScreen(); // update video screen whenever a new editor is added
+      if (videoInterval) startVideoScreen(); // update video screen if already playing
     }
 
     function runEditor(id) {
@@ -246,7 +255,7 @@
         doc.close();
 
         videoIndex = (videoIndex + 1) % totalEditors;
-      }, 3000);
+      }, intervalDuration);
     }
 
     function pauseVideoScreen() {
@@ -254,7 +263,21 @@
       videoInterval = null;
     }
 
-    // Event listeners for play/pause
+    // Speed slider
+    const speedRange = document.getElementById('speed-range');
+    const speedValue = document.getElementById('speed-value');
+
+    speedRange.addEventListener('input', () => {
+      const seconds = parseInt(speedRange.value);
+      speedValue.textContent = seconds;
+      intervalDuration = seconds * 1000;
+
+      if (videoInterval) {
+        startVideoScreen(); // restart interval with new speed
+      }
+    });
+
+    // Play/Pause buttons
     document.getElementById('play-btn').addEventListener('click', startVideoScreen);
     document.getElementById('pause-btn').addEventListener('click', pauseVideoScreen);
 
