@@ -125,6 +125,10 @@
       margin-left: 10px;
     }
 
+    .video-screen-controls button {
+      margin-left: 5px;
+    }
+
     @media (max-width: 768px) {
       .editor-body {
         flex-direction: column;
@@ -140,20 +144,25 @@
 </head>
 <body>
 
+  <!-- Video Screen Controls -->
   <div class="video-screen-controls">
     <button id="play-btn">Play</button>
     <button id="pause-btn">Pause</button>
     <label for="speed-range">Speed (sec):</label>
     <input type="range" id="speed-range" min="1" max="10" value="3">
     <span id="speed-value">3</span>
+    <button id="fullscreen-btn"><i class="fa fa-expand"></i> Fullscreen</button>
   </div>
 
+  <!-- Video Screen -->
   <div class="video-screen-container">
     <iframe id="video-screen"></iframe>
   </div>
 
+  <!-- Editors Container -->
   <div class="editor-container" id="editorContainer"></div>
 
+  <!-- Add Editor Button -->
   <div class="accordion-footer">
     <button onclick="addEditor()">+ Add Editor</button>
   </div>
@@ -164,6 +173,7 @@
     let videoInterval = null;
     let intervalDuration = 3000; // default 3 seconds
 
+    // Add a new editor
     function addEditor() {
       const container = document.getElementById('editorContainer');
       const editorId = editorCount++;
@@ -205,9 +215,10 @@
       });
 
       runEditor(editorId);
-      if (videoInterval) startVideoScreen(); // update video screen if already playing
+      if (videoInterval) startVideoScreen(); // update video screen if playing
     }
 
+    // Run editor content in its iframe
     function runEditor(id) {
       const htmlCode = document.getElementById(`html-${id}`).value;
       const cssCode = document.getElementById(`css-${id}`).value;
@@ -224,6 +235,7 @@
       doc.close();
     }
 
+    // Accordion toggle
     function toggleAccordion(id) {
       const body = document.getElementById(`editor-body-${id}`);
       const icon = document.getElementById(`toggle-icon-${id}`);
@@ -236,6 +248,7 @@
       }
     }
 
+    // Video screen slideshow
     function startVideoScreen() {
       if (videoInterval) clearInterval(videoInterval);
 
@@ -244,12 +257,12 @@
         if (totalEditors === 0) return;
 
         const outputFrame = document.getElementById(`output-${videoIndex}`);
-        const videoScreen = document.getElementById('video-screen');
-
         if (!outputFrame) return;
 
+        const videoScreen = document.getElementById('video-screen');
         const doc = videoScreen.contentDocument || videoScreen.contentWindow.document;
         const editorDoc = outputFrame.contentDocument || outputFrame.contentWindow.document;
+
         doc.open();
         doc.write(editorDoc.documentElement.outerHTML);
         doc.close();
@@ -271,17 +284,38 @@
       const seconds = parseInt(speedRange.value);
       speedValue.textContent = seconds;
       intervalDuration = seconds * 1000;
-
-      if (videoInterval) {
-        startVideoScreen(); // restart interval with new speed
-      }
+      if (videoInterval) startVideoScreen();
     });
 
     // Play/Pause buttons
     document.getElementById('play-btn').addEventListener('click', startVideoScreen);
     document.getElementById('pause-btn').addEventListener('click', pauseVideoScreen);
 
-    // Start with one editor by default
+    // Fullscreen button
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const videoScreen = document.getElementById('video-screen');
+
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        if (videoScreen.requestFullscreen) {
+          videoScreen.requestFullscreen();
+        } else if (videoScreen.webkitRequestFullscreen) { /* Safari */
+          videoScreen.webkitRequestFullscreen();
+        } else if (videoScreen.msRequestFullscreen) { /* IE11 */
+          videoScreen.msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      }
+    });
+
+    // Start with one editor
     addEditor();
   </script>
 </body>
