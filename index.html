@@ -21,7 +21,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      height: 200vh;
+      height: 100vh;
     }
 
     .controls {
@@ -42,27 +42,6 @@
 
     .controls button:hover {
       background: #0077a8;
-    }
-
-    .arrow-controls {
-      margin-top: 10px;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .arrow-controls button {
-      background: #333;
-      border: none;
-      color: #fff;
-      padding: 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 18px;
-    }
-
-    .arrow-controls button:hover {
-      background: #555;
     }
 
     .editor-section {
@@ -180,7 +159,6 @@
 <body>
   <div class="controls">
     <button onclick="run()">▶ Run Code</button>
-    <button onclick="openModal()">🖼 Add Image</button>
   </div>
 
   <div class="editor-section">
@@ -188,41 +166,17 @@
       <label><i class="fa-brands fa-html5"></i>HTML</label>
       <textarea id="html-code" placeholder="Write HTML here..."></textarea>
     </div>
-
-    <div class="editor">
+<div class="editor">
       <label><i class="fa-brands fa-css3-alt"></i>CSS</label>
       <textarea id="css-code" placeholder="Write CSS here..."></textarea>
     </div>
-
-    <div class="editor">
+<div class="editor">
       <label><i class="fa-brands fa-js"></i>JavaScript</label>
       <textarea id="js-code" placeholder="Write JavaScript here..."></textarea>
     </div>
   </div>
-
-  <iframe id="output"></iframe>
-
-  <!-- Arrow controls -->
-  <div class="arrow-controls" id="arrow-controls" style="display:none;">
-    <button onclick="moveImage('up')">⬆</button>
-    <button onclick="moveImage('left')">⬅</button>
-    <button onclick="moveImage('right')">➡</button>
-    <button onclick="moveImage('down')">⬇</button>
-  </div>
-
-  <!-- Modal -->
-  <div id="imageModal" class="modal">
-    <div class="modal-content">
-      <h3>Add Image</h3>
-      <input type="text" id="image-url" placeholder="Enter image URL" />
-      <div>
-        <button class="add-btn" onclick="insertImage()">Add</button>
-        <button class="cancel-btn" onclick="closeModal()">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
+<iframe id="output"></iframe>
+<script>
     let xOffset = 0;
     let yOffset = 0;
     let hasImage = false;
@@ -236,96 +190,12 @@
 
       doc.open();
       doc.write(`
-        <style>
-          body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            flex-direction: column;
-            text-align: center;
-          }
-          ${cssCode}
-        </style>
+        ${cssCode}
         ${htmlCode}
         <script>${jsCode}<\/script>
       `);
       doc.close();
     }
-
-    function openModal() {
-      const modal = document.getElementById("imageModal");
-      modal.classList.add("show");
-      document.getElementById("image-url").focus();
-    }
-
-    function closeModal() {
-      const modal = document.getElementById("imageModal");
-      modal.classList.remove("show");
-      document.getElementById("image-url").value = "";
-    }
-
-    function insertImage() {
-      const imageUrl = document.getElementById("image-url").value.trim();
-      if (imageUrl) {
-        const htmlBox = document.getElementById("html-code");
-        htmlBox.value = `<div class="movable-image"><img src="${imageUrl}" alt="Inserted Image" /></div>`;
-        const cssBox = document.getElementById("css-code");
-        if (!cssBox.value.includes(".movable-image")) {
-          cssBox.value += `
-.movable-image {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  transform: translate(0px, 0px);
-  transition: transform 0.2s ease;
-}`;
-        }
-        hasImage = true;
-        document.getElementById("arrow-controls").style.display = "flex";
-        xOffset = 0;
-        yOffset = 0;
-        run();
-        closeModal();
-      }
-    }
-
-    function moveImage(direction) {
-      if (!hasImage) return;
-
-      const step = 10;
-      if (direction === "up") yOffset -= step;
-      if (direction === "down") yOffset += step;
-      if (direction === "left") xOffset -= step;
-      if (direction === "right") xOffset += step;
-
-      // Update HTML and rerun
-      const htmlBox = document.getElementById("html-code");
-      let htmlContent = htmlBox.value;
-      htmlContent = htmlContent.replace(
-        /transform: translate\([^)]+\)/,
-        `transform: translate(${xOffset}px, ${yOffset}px)`
-      );
-
-      // if style not inline, add one dynamically
-      if (!htmlContent.includes("transform:")) {
-        htmlContent = htmlContent.replace(
-          '<div class="movable-image">',
-          `<div class="movable-image" style="transform: translate(${xOffset}px, ${yOffset}px)">`
-        );
-      }
-
-      htmlBox.value = htmlContent;
-      run();
-    }
-
-    // Close modal if clicking outside
-    window.onclick = function (event) {
-      const modal = document.getElementById("imageModal");
-      if (event.target === modal) closeModal();
-    };
-  </script>
+</script>
 </body>
 </html>
