@@ -1,344 +1,208 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dynamic Full-Width Live Editors</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
-
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: #222;
-      color: #fff;
-    }
-
-    .editor-container {
-      width: 100%;
-      max-width: 100%;
-      margin: 0;
-      padding: 0 20px;
-    }
-
-    .accordion {
-      background: #333;
-      margin-bottom: 10px;
-      border-radius: 5px;
-      overflow: hidden;
-    }
-
-    .accordion-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 15px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .accordion-header:hover {
-      background: #444;
-    }
-
-    .editor-body {
-      display: flex;
-      flex-direction: row;
-      gap: 10px;
-      padding: 10px;
-      background: white;
-      flex-wrap: wrap;
-    }
-
-    .editor {
-      flex: 1;
-      min-width: 250px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .editor label {
-      padding: 5px;
-      font-size: 14px;
-      background: #000;
-    }
-
-    textarea {
-      width: 100%;
-      height: 150px;
-      background: #222;
-      color: #fff;
-      border: none;
-      padding: 10px;
-      resize: vertical;
-      font-size: 14px;
-      outline: none;
-    }
-
-    iframe {
-      width: 100%;
-      height: 80vh;
-      border: none;
-      margin-top: 10px;
-      border-radius: 5px;
-    }
-
-    .accordion-footer {
-      text-align: center;
-      margin: 15px 0;
-    }
-
-    .accordion-footer button {
-      background: #008CBA;
-      border: none;
-      color: #fff;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .accordion-footer button:hover {
-      background: #0077a8;
-    }
-
-    .video-screen-container {
-      width: 100%;
-      margin-bottom: 20px;
-    }
-
-    #video-screen {
-      width: 100%;
-      height: 80vh;
-      border: 2px solid #008CBA;
-      border-radius: 10px;
-    }
-
-    .video-screen-controls {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .video-screen-controls input[type="range"] {
-      vertical-align: middle;
-      margin-left: 10px;
-    }
-
-    .video-screen-controls button {
-      margin-left: 5px;
-    }
-
-    @media (max-width: 768px) {
-      .editor-body {
-        flex-direction: column;
-      }
-      textarea {
-        height: 120px;
-      }
-      iframe {
-        height: 60vh;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Editors with Audio in Video Mode</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<style>
+body { margin: 0; font-family: 'Poppins', sans-serif; background: #222; color: #fff; }
+.editor-container { width: 100%; max-width: 100%; margin: 0; padding: 0 20px; }
+.accordion { background: #333; margin-bottom: 10px; border-radius: 5px; overflow: hidden; }
+.accordion-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; cursor: pointer; font-weight: bold; font-size: 16px; }
+.accordion-header:hover { background: #444; }
+.editor-body { display: flex; flex-direction: row; gap: 10px; padding: 10px; background: white; flex-wrap: wrap; }
+.editor { flex: 1; min-width: 250px; display: flex; flex-direction: column; }
+.editor label { padding: 5px; font-size: 14px; background: #000; }
+textarea { width: 100%; height: 150px; background: #222; color: #fff; border: none; padding: 10px; resize: vertical; font-size: 14px; outline: none; }
+iframe { width: 100%; height: 80vh; border: none; margin-top: 10px; border-radius: 5px; }
+.accordion-footer { text-align: center; margin: 15px 0; }
+.accordion-footer button { background: #008CBA; border: none; color: #fff; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; }
+.accordion-footer button:hover { background: #0077a8; }
+.video-screen-container { width: 100%; margin-bottom: 20px; }
+#video-screen { width: 100%; height: 80vh; border: 2px solid #008CBA; border-radius: 10px; }
+.video-screen-controls { text-align: center; margin-bottom: 10px; }
+.video-screen-controls input[type="range"] { vertical-align: middle; margin-left: 10px; }
+.video-screen-controls button { margin-left: 5px; }
+@media (max-width: 768px) { .editor-body { flex-direction: column; } textarea { height: 120px; } iframe { height: 60vh; } }
+</style>
 </head>
 <body>
 
-  <!-- Video Screen Controls -->
-  <div class="video-screen-controls">
-    <button id="play-btn">Play</button>
-    <button id="pause-btn">Pause</button>
-    <label for="speed-range">Speed (sec):</label>
-    <input type="range" id="speed-range" min="1" max="10" value="3">
-    <span id="speed-value">3</span>
-    <button id="fullscreen-btn"><i class="fa fa-expand"></i> Fullscreen</button>
-  </div>
+<div class="video-screen-controls">
+  <button id="play-btn">Play</button>
+  <button id="pause-btn">Pause</button>
+  <label for="speed-range">Speed (sec):</label>
+  <input type="range" id="speed-range" min="1" max="10" value="3">
+  <span id="speed-value">0.6</span>
+  <button id="fullscreen-btn"><i class="fa fa-expand"></i> Fullscreen</button>
+</div>
 
-  <!-- Video Screen -->
-  <div class="video-screen-container">
-    <iframe id="video-screen"></iframe>
-  </div>
+<div class="video-screen-container">
+  <iframe id="video-screen"></iframe>
+</div>
 
-  <!-- Editors Container -->
-  <div class="editor-container" id="editorContainer"></div>
+<div class="editor-container" id="editorContainer"></div>
 
-  <!-- Add Editor Button -->
-  <div class="accordion-footer">
-    <button onclick="addEditor()">+ Add Editor</button>
-  </div>
+<div class="accordion-footer">
+  <button onclick="addEditor()">+ Add Editor</button>
+</div>
 
-  <script>
-    let editorCount = 0;
-    let videoIndex = 0;
-    let videoInterval = null;
-    let intervalDuration = 3000; // default 3 seconds
+<script>
+let editorCount = 0;
+let videoIndex = 0;
+let videoInterval = null;
+let intervalDuration = 600;
+let currentAudio = null;
 
-    // Add a new editor
-    function addEditor() {
-      const container = document.getElementById('editorContainer');
-      const editorId = editorCount++;
+// Add editor
+function addEditor() {
+  const container = document.getElementById('editorContainer');
+  const editorId = editorCount++;
 
-      const accordion = document.createElement('div');
-      accordion.className = 'accordion';
+  const accordion = document.createElement('div');
+  accordion.className = 'accordion';
 
-      const header = document.createElement('div');
-      header.className = 'accordion-header';
-      header.innerHTML = `Editor ${editorId + 1} <span><i class="fa fa-minus" id="toggle-icon-${editorId}"></i></span>`;
-      header.onclick = () => toggleAccordion(editorId);
-      accordion.appendChild(header);
+  const header = document.createElement('div');
+  header.className = 'accordion-header';
+  header.innerHTML = `Editor ${editorId + 1} <span><i class="fa fa-minus" id="toggle-icon-${editorId}"></i></span>`;
+  header.onclick = () => toggleAccordion(editorId);
+  accordion.appendChild(header);
 
-      const body = document.createElement('div');
-      body.className = 'editor-body';
-      body.id = `editor-body-${editorId}`;
+  const body = document.createElement('div');
+  body.className = 'editor-body';
+  body.id = `editor-body-${editorId}`;
 
-      body.innerHTML = `
-        <div class="editor">
-          <label><i class="fa-brands fa-html5"></i> HTML</label>
-          <textarea id="html-${editorId}" placeholder="Write HTML here..."></textarea>
-          <button onclick="saveEditorContent(${editorId}, 'html')">Save HTML</button>
-        </div>
-        <div class="editor">
-          <label><i class="fa-brands fa-css3-alt"></i> CSS</label>
-          <textarea id="css-${editorId}" placeholder="Write CSS here..."></textarea>
-          <button onclick="saveEditorContent(${editorId}, 'css')">Save CSS</button>
-        </div>
-        <div class="editor">
-          <label><i class="fa-brands fa-js"></i> JS</label>
-          <textarea id="js-${editorId}" placeholder="Write JS here..."></textarea>
-          <button onclick="saveEditorContent(${editorId}, 'js')">Save JS</button>
-        </div>
-        <iframe id="output-${editorId}"></iframe>
-      `;
+  body.innerHTML = `
+    <div class="editor">
+      <label><i class="fa-brands fa-html5"></i> HTML</label>
+      <textarea id="html-${editorId}" placeholder="Write HTML here..."></textarea>
+      <button onclick="saveEditorContent(${editorId}, 'html')">Save HTML</button>
+    </div>
+    <div class="editor">
+      <label><i class="fa-brands fa-css3-alt"></i> CSS</label>
+      <textarea id="css-${editorId}" placeholder="Write CSS here..."></textarea>
+      <button onclick="saveEditorContent(${editorId}, 'css')">Save CSS</button>
+    </div>
+    <div class="editor">
+      <label><i class="fa-brands fa-js"></i> JS</label>
+      <textarea id="js-${editorId}" placeholder="Write JS here..."></textarea>
+      <button onclick="saveEditorContent(${editorId}, 'js')">Save JS</button>
+    </div>
+    <iframe id="output-${editorId}"></iframe>
+  `;
 
-      accordion.appendChild(body);
-      container.appendChild(accordion);
+  accordion.appendChild(body);
+  container.appendChild(accordion);
 
-      // Load saved content if available
-      loadSavedContent(editorId);
+  loadSavedContent(editorId);
 
-      ['html', 'css', 'js'].forEach(type => {
-        document.getElementById(`${type}-${editorId}`).addEventListener('input', () => runEditor(editorId));
-      });
+  ['html','css','js'].forEach(type => {
+    document.getElementById(`${type}-${editorId}`).addEventListener('input', () => runEditor(editorId));
+  });
 
-      runEditor(editorId);
-      if (videoInterval) startVideoScreen(); // update video screen if playing
-    }
+  runEditor(editorId);
+  if(videoInterval) startVideoScreen();
+}
 
-    // Run editor content in its iframe
-    function runEditor(id) {
-      const htmlCode = document.getElementById(`html-${id}`).value;
-      const cssCode = document.getElementById(`css-${id}`).value;
-      const jsCode = document.getElementById(`js-${id}`).value;
-      const output = document.getElementById(`output-${id}`);
-      const doc = output.contentDocument || output.contentWindow.document;
+// Run editor content
+function runEditor(id) {
+  const html = document.getElementById(`html-${id}`).value;
+  const css = document.getElementById(`css-${id}`).value;
+  const js = document.getElementById(`js-${id}`).value;
+  const output = document.getElementById(`output-${id}`);
+  const doc = output.contentDocument || output.contentWindow.document;
+  doc.open();
+  doc.write(`<style>${css}</style>${html}<script>${js}<\/script>`);
+  doc.close();
+}
 
-      doc.open();
-      doc.write(`
-        <style>${cssCode}</style>
-        ${htmlCode}
-        <script>${jsCode}<\/script>
-      `);
-      doc.close();
-    }
+// Save/load
+function saveEditorContent(editorId, type) {
+  const content = document.getElementById(`${type}-${editorId}`).value;
+  localStorage.setItem(`editor-${editorId}-${type}`, content);
+  alert(`${type.toUpperCase()} saved!`);
+}
+function loadSavedContent(editorId) {
+  ['html','css','js'].forEach(type => {
+    const saved = localStorage.getItem(`editor-${editorId}-${type}`);
+    if(saved) document.getElementById(`${type}-${editorId}`).value = saved;
+  });
+}
 
-    // Save editor content to localStorage
-    function saveEditorContent(editorId, type) {
-      const content = document.getElementById(`${type}-${editorId}`).value;
-      localStorage.setItem(`editor-${editorId}-${type}`, content);
-      alert(`${type.toUpperCase()} content saved!`);
-    }
+// Accordion toggle
+function toggleAccordion(id) {
+  const body = document.getElementById(`editor-body-${id}`);
+  const icon = document.getElementById(`toggle-icon-${id}`);
+  if(body.style.display === 'none' || body.style.display === '') {
+    body.style.display = 'flex';
+    icon.className = 'fa fa-minus';
+  } else {
+    body.style.display = 'none';
+    icon.className = 'fa fa-plus';
+  }
+}
 
-    // Load saved content from localStorage
-    function loadSavedContent(editorId) {
-      ['html', 'css', 'js'].forEach(type => {
-        const savedContent = localStorage.getItem(`editor-${editorId}-${type}`);
-        if (savedContent) {
-          document.getElementById(`${type}-${editorId}`).value = savedContent;
-        }
-      });
-    }
-
-    // Accordion toggle
-    function toggleAccordion(id) {
-      const body = document.getElementById(`editor-body-${id}`);
-      const icon = document.getElementById(`toggle-icon-${id}`);
-      if (body.style.display === 'none' || body.style.display === '') {
-        body.style.display = 'flex';
-        icon.className = 'fa fa-minus';
-      } else {
-        body.style.display = 'none';
-        icon.className = 'fa fa-plus';
-      }
-    }
-
-    // Video screen slideshow
-    function startVideoScreen() {
-      if (videoInterval) clearInterval(videoInterval);
-
-      videoInterval = setInterval(() => {
-        const totalEditors = editorCount;
-        if (totalEditors === 0) return;
-
-        const outputFrame = document.getElementById(`output-${videoIndex}`);
-        if (!outputFrame) return;
-
-        const videoScreen = document.getElementById('video-screen');
-        const doc = videoScreen.contentDocument || videoScreen.contentWindow.document;
-        const editorDoc = outputFrame.contentDocument || outputFrame.contentWindow.document;
-
-        doc.open();
-        doc.write(editorDoc.documentElement.outerHTML);
-        doc.close();
-
-        videoIndex = (videoIndex + 1) % totalEditors;
-      }, intervalDuration);
-    }
-
-    function pauseVideoScreen() {
-      clearInterval(videoInterval);
-      videoInterval = null;
-    }
-
-    // Speed slider
-    const speedRange = document.getElementById('speed-range');
-    const speedValue = document.getElementById('speed-value');
-
-    speedRange.addEventListener('input', () => {
-      const seconds = parseInt(speedRange.value);
-      speedValue.textContent = seconds;
-      intervalDuration = seconds * 200;
-      if (videoInterval) startVideoScreen();
-    });
-
-    // Play/Pause buttons
-    document.getElementById('play-btn').addEventListener('click', startVideoScreen);
-    document.getElementById('pause-btn').addEventListener('click', pauseVideoScreen);
-
-    // Fullscreen button
-    const fullscreenBtn = document.getElementById('fullscreen-btn');
+// Video slideshow
+function startVideoScreen() {
+  if(videoInterval) clearInterval(videoInterval);
+  videoInterval = setInterval(() => {
+    const totalEditors = editorCount;
+    if(totalEditors===0) return;
+    const outputFrame = document.getElementById(`output-${videoIndex}`);
+    if(!outputFrame) return;
     const videoScreen = document.getElementById('video-screen');
+    const doc = videoScreen.contentDocument || videoScreen.contentWindow.document;
+    const editorDoc = outputFrame.contentDocument || outputFrame.contentWindow.document;
 
-    fullscreenBtn.addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        if (videoScreen.requestFullscreen) {
-          videoScreen.requestFullscreen();
-        } else if (videoScreen.webkitRequestFullscreen) { /* Safari */
-          videoScreen.webkitRequestFullscreen();
-        } else if (videoScreen.msRequestFullscreen) { /* IE11 */
-          videoScreen.msRequestFullscreen();
-        }
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen();
-        }
-      }
-    });
+    doc.open();
+    doc.write(editorDoc.documentElement.outerHTML);
+    doc.close();
 
-    addEditor();
-  </script>
+    // Pause all audio in the iframe except the active one
+    if(currentAudio) { currentAudio.pause(); currentAudio = null; }
+    try {
+      const audios = videoScreen.contentWindow.document.querySelectorAll('audio');
+      audios.forEach(a => { a.play().catch(()=>{}); currentAudio = a; });
+    } catch(e){}
+
+    videoIndex = (videoIndex+1)%totalEditors;
+  }, intervalDuration);
+}
+
+function pauseVideoScreen() {
+  clearInterval(videoInterval);
+  videoInterval=null;
+  if(currentAudio) { currentAudio.pause(); currentAudio=null; }
+}
+
+// Speed slider
+const speedRange = document.getElementById('speed-range');
+const speedValue = document.getElementById('speed-value');
+speedRange.addEventListener('input', () => {
+  const units=parseInt(speedRange.value);
+  intervalDuration=units*200;
+  speedValue.textContent=(intervalDuration/1000).toFixed(1);
+  if(videoInterval) startVideoScreen();
+});
+
+// Play/Pause buttons
+document.getElementById('play-btn').addEventListener('click', startVideoScreen);
+document.getElementById('pause-btn').addEventListener('click', pauseVideoScreen);
+
+// Fullscreen
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+const videoScreen = document.getElementById('video-screen');
+fullscreenBtn.addEventListener('click', () => {
+  if(!document.fullscreenElement) {
+    videoScreen.requestFullscreen?.() || videoScreen.webkitRequestFullscreen?.() || videoScreen.msRequestFullscreen?.();
+  } else {
+    document.exitFullscreen?.() || document.webkitExitFullscreen?.() || document.msExitFullscreen?.();
+  }
+});
+
+addEditor();
+</script>
+
 </body>
 </html>
