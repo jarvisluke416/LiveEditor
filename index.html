@@ -306,7 +306,7 @@
     speedRange.addEventListener('input', () => {
       const seconds = parseInt(speedRange.value);
       speedValue.textContent = seconds;
-      intervalDuration = seconds * 1000;
+      intervalDuration = seconds * 200;
       if (videoInterval) startVideoScreen();
     });
 
