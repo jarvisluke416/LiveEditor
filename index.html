@@ -18,7 +18,7 @@
       width: 100%;
       max-width: 100%;
       margin: 0;
-      padding: 0 20px; 
+      padding: 0 20px;
     }
 
     .accordion {
@@ -195,20 +195,26 @@
         <div class="editor">
           <label><i class="fa-brands fa-html5"></i> HTML</label>
           <textarea id="html-${editorId}" placeholder="Write HTML here..."></textarea>
+          <button onclick="saveEditorContent(${editorId}, 'html')">Save HTML</button>
         </div>
         <div class="editor">
           <label><i class="fa-brands fa-css3-alt"></i> CSS</label>
           <textarea id="css-${editorId}" placeholder="Write CSS here..."></textarea>
+          <button onclick="saveEditorContent(${editorId}, 'css')">Save CSS</button>
         </div>
         <div class="editor">
           <label><i class="fa-brands fa-js"></i> JS</label>
           <textarea id="js-${editorId}" placeholder="Write JS here..."></textarea>
+          <button onclick="saveEditorContent(${editorId}, 'js')">Save JS</button>
         </div>
         <iframe id="output-${editorId}"></iframe>
       `;
 
       accordion.appendChild(body);
       container.appendChild(accordion);
+
+      // Load saved content if available
+      loadSavedContent(editorId);
 
       ['html', 'css', 'js'].forEach(type => {
         document.getElementById(`${type}-${editorId}`).addEventListener('input', () => runEditor(editorId));
@@ -233,6 +239,23 @@
         <script>${jsCode}<\/script>
       `);
       doc.close();
+    }
+
+    // Save editor content to localStorage
+    function saveEditorContent(editorId, type) {
+      const content = document.getElementById(`${type}-${editorId}`).value;
+      localStorage.setItem(`editor-${editorId}-${type}`, content);
+      alert(`${type.toUpperCase()} content saved!`);
+    }
+
+    // Load saved content from localStorage
+    function loadSavedContent(editorId) {
+      ['html', 'css', 'js'].forEach(type => {
+        const savedContent = localStorage.getItem(`editor-${editorId}-${type}`);
+        if (savedContent) {
+          document.getElementById(`${type}-${editorId}`).value = savedContent;
+        }
+      });
     }
 
     // Accordion toggle
@@ -315,7 +338,6 @@
       }
     });
 
-    // Start with one editor
     addEditor();
   </script>
 </body>
